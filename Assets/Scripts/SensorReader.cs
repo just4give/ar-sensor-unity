@@ -19,6 +19,7 @@ public class SensorReader : MonoBehaviour
     private bool isCoroutineExecuting = false;
 
     SensorData sensorData = new SensorData();
+    private string topic = "";
 
     // Start is called before the first frame update
     void Start()
@@ -32,7 +33,7 @@ public class SensorReader : MonoBehaviour
 		client.Connect(clientId); 
 		
 		// subscribe to the topic "/home/temperature" with QoS 2 
-		client.Subscribe(new string[] { "/AHXPD/arduino" }, new byte[] { MqttMsgBase.QOS_LEVEL_EXACTLY_ONCE }); 
+		client.Subscribe(new string[] { topic }, new byte[] { MqttMsgBase.QOS_LEVEL_EXACTLY_ONCE }); 
 
         //string strValue = Convert.ToString(value); 
  
@@ -44,10 +45,17 @@ public class SensorReader : MonoBehaviour
     void client_MqttMsgPublishReceived(object sender, MqttMsgPublishEventArgs e) 
 	{ 
 
-        string msg = System.Text.Encoding.UTF8.GetString(e.Message);
-        //Debug.Log ("Received message from " + e.Topic + " : " + msg);
-        sensorData  = JsonUtility.FromJson<SensorData>(msg);
-		//Debug.Log("Temperature:"+sensorData.temperature);
+        try
+        {
+            string msg = System.Text.Encoding.UTF8.GetString(e.Message);
+            Debug.Log("Received message from " + e.Topic + " : " + msg);
+            sensorData = JsonUtility.FromJson<SensorData>(msg);
+            //Debug.Log("Temperature:"+sensorData.temperature);
+        }
+        catch (Exception ex)
+        {
+            Debug.Log("Exception:" + ex.Message);
+        }
         
 	} 
 

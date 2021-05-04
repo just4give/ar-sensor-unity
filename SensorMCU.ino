@@ -6,7 +6,7 @@
 
 const char* ssid = "";//put your wifi network name here
 const char* password = "";//put your wifi password here
-
+const char* topic = "";
 
 
 
@@ -25,8 +25,8 @@ int SensorState;
 DHT dht(DHTPIN, DHTTYPE);
 
 // current temperature & humidity, updated in loop()
-float t = 0.0;
-float h = 0.0;
+int t = 0;
+int h = 0;
 
 const char* mqtt_server = "broker.hivemq.com";
 
@@ -96,7 +96,7 @@ void loop()
     }
     client.loop();
       // Read temperature as Celsius (the default)
-    float newT = dht.readTemperature(true);
+    int newT = dht.readTemperature(true);
     // Read temperature as Fahrenheit (isFahrenheit = true)
     //float newT = dht.readTemperature(true);
     // if temperature read failed, don't change t value
@@ -109,7 +109,7 @@ void loop()
       Serial.println(t);
     }
     // Read Humidity
-    float newH = dht.readHumidity();
+    int newH = dht.readHumidity();
     // if humidity read failed, don't change h value 
     if (isnan(newH)) {
       Serial.println("Failed to read from DHT sensor!");
@@ -126,8 +126,8 @@ void loop()
      msg=msg+"}";
      char message[58];
      msg.toCharArray(message,58);
-    client.publish("/AHXPD/arduino", message);
+    client.publish(topic, message);
 
-    delay(10000);
+    delay(60*1000);
   
 }
